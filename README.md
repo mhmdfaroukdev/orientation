@@ -6,6 +6,8 @@ Orientation registration website for Claude Builder Club – AOU Egypt.
 
 https://mhmdwaelanwr.github.io/orientation/
 
+Deployment target: GitHub Pages from the `main` branch through GitHub Actions.
+
 ## Included
 
 - Responsive orientation landing page
