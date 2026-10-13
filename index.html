@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4f1ea" />
+  <meta name="description" content="Register for the Claude Builder Club – AOU Egypt orientation." />
+  <title>Orientation Registration | Claude Builder Club – AOU Egypt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Claude Builder Club home">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>
+          <strong>Claude Builder Club</strong>
+          <small>AOU Egypt</small>
+        </span>
+      </a>
+      <a class="header-cta" href="#register">Register now</a>
+    </header>
+
+    <main id="top">
+      <section class="hero section-pad">
+        <div class="hero-copy">
+          <div class="eyebrow">Founding Team Orientation</div>
+          <h1>Meet the club.<br />Meet the team.<br /><span>Build what’s next.</span></h1>
+          <p class="hero-lead">
+            Join the Claude Builder Club – AOU Egypt orientation to learn how the community works,
+            meet the founding team, and discover how you can contribute to projects, events, and AI initiatives.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#register">Reserve your seat</a>
+            <a class="button button-ghost" href="#agenda">See the agenda</a>
+          </div>
+          <div class="micro-note">
+            <span class="dot"></span>
+            Registration confirmation will be sent to your email.
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Orientation details">
+          <div class="hero-card-top">
+            <span>ORIENTATION / 01</span>
+            <span class="status-chip">Registration open</span>
+          </div>
+          <div class="event-word">CLAUDE</div>
+          <div class="event-word outline">AOU</div>
+          <div class="event-meta">
+            <div>
+              <small>Date & time</small>
+              <strong id="eventDate">To be announced</strong>
+            </div>
+            <div>
+              <small>Location</small>
+              <strong id="eventLocation">AOU Egypt</strong>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="trust-strip" aria-label="Event highlights">
+        <span>AI community</span><i>✦</i><span>Projects</span><i>✦</i><span>Workshops</span><i>✦</i><span>Founding team</span><i>✦</i><span>AOU Egypt</span>
+      </section>
+
+      <section id="agenda" class="content-section section-pad">
+        <div class="section-heading">
+          <span class="eyebrow">What to expect</span>
+          <h2>90 minutes to get aligned.</h2>
+          <p>Everything you need before the club starts moving as one team.</p>
+        </div>
+
+        <div class="agenda-grid">
+          <article class="agenda-card">
+            <span class="agenda-number">01</span>
+            <div>
+              <h3>Welcome & vision</h3>
+              <p>Why the club exists, what we want to build at AOU, and what makes a strong community.</p>
+            </div>
+          </article>
+          <article class="agenda-card">
+            <span class="agenda-number">02</span>
+            <div>
+              <h3>Teams & roles</h3>
+              <p>Meet the technical, design, content, PR, community, events, and operations tracks.</p>
+            </div>
+          </article>
+          <article class="agenda-card">
+            <span class="agenda-number">03</span>
+            <div>
+              <h3>How we work</h3>
+              <p>Communication, projects, events, ownership, expectations, and the member journey.</p>
+            </div>
+          </article>
+          <article class="agenda-card">
+            <span class="agenda-number">04</span>
+            <div>
+              <h3>Next steps</h3>
+              <p>Interview process, onboarding, first initiatives, and what happens after orientation.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="register" class="registration-section section-pad">
+        <div class="registration-copy">
+          <span class="eyebrow">Registration</span>
+          <h2>Save your spot.</h2>
+          <p>
+            Use the same email you regularly check. Your registration ID and orientation confirmation
+            will be sent there automatically.
+          </p>
+          <div class="registration-points">
+            <div><b>01</b><span>Register once with your university details.</span></div>
+            <div><b>02</b><span>Receive your confirmation and unique registration ID.</span></div>
+            <div><b>03</b><span>Watch your inbox for final timing and venue updates.</span></div>
+          </div>
+        </div>
+
+        <div class="form-panel">
+          <div class="form-panel-head">
+            <div>
+              <span class="form-kicker">CBC • AOU EGYPT</span>
+              <h3>Orientation form</h3>
+            </div>
+            <span class="secure-pill">Secure form</span>
+          </div>
+
+          <form id="registrationForm" method="post" target="submitFrame" novalidate>
+            <div class="field-grid">
+              <label class="field field-wide">
+                <span>Full name <em>*</em></span>
+                <input name="fullName" autocomplete="name" required maxlength="100" placeholder="Your full name" />
+              </label>
+
+              <label class="field field-wide">
+                <span>Email address <em>*</em></span>
+                <input name="email" type="email" autocomplete="email" required maxlength="120" placeholder="name@example.com" />
+              </label>
+
+              <label class="field">
+                <span>University ID <em>*</em></span>
+                <input name="universityId" required maxlength="30" placeholder="e.g. 12345678" />
+              </label>
+
+              <label class="field">
+                <span>Academic year <em>*</em></span>
+                <select name="academicYear" required>
+                  <option value="" selected disabled>Select year</option>
+                  <option>First year</option>
+                  <option>Second year</option>
+                  <option>Third year</option>
+                  <option>Fourth year</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="field field-wide">
+                <span>Faculty / major <em>*</em></span>
+                <input name="faculty" required maxlength="100" placeholder="e.g. Computer Science" />
+              </label>
+
+              <label class="field">
+                <span>Phone number</span>
+                <input name="phone" type="tel" autocomplete="tel" maxlength="25" placeholder="01xxxxxxxxx" />
+              </label>
+
+              <label class="field">
+                <span>Interested track</span>
+                <select name="track">
+                  <option value="" selected>Not sure yet</option>
+                  <option>Development</option>
+                  <option>Design</option>
+                  <option>Content Creation</option>
+                  <option>PR & Marketing</option>
+                  <option>Community & Events</option>
+                  <option>Operations</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="consent-row">
+              <input type="checkbox" name="consent" value="yes" required />
+              <span>I confirm that the information above is correct and I agree to receive orientation-related emails. <em>*</em></span>
+            </label>
+
+            <input type="hidden" name="source" value="orientation-site" />
+
+            <button class="submit-button" type="submit">
+              <span class="submit-label">Complete registration</span>
+              <span class="submit-icon" aria-hidden="true">↗</span>
+            </button>
+
+            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+            <p class="privacy-note">Your details are used only for Claude Builder Club – AOU Egypt orientation and member communication.</p>
+          </form>
+          <iframe id="submitFrame" name="submitFrame" title="Registration submission" hidden></iframe>
+        </div>
+      </section>
+
+      <section class="final-banner section-pad">
+        <div>
+          <span class="eyebrow">Build together</span>
+          <h2>Your first club session starts here.</h2>
+        </div>
+        <a class="button button-dark" href="#register">Register for orientation</a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="brand footer-brand">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><strong>Claude Builder Club</strong><small>AOU Egypt</small></span>
+      </div>
+      <p>Student community at Arab Open University – Egypt.</p>
+      <p>© <span id="year"></span> Claude Builder Club – AOU Egypt.</p>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
