@@ -16,21 +16,33 @@
     })();
   </script>
 
-  <title>Orientation | Claude Builder Club @ AOU Egypt</title>
-  <meta name="description" content="Register for the Claude Builder Club @ AOU Egypt founding team orientation." />
+  <title>Founding Team Orientation | Claude Builder Club @ AOU Egypt</title>
+  <meta name="description" content="Register for the Claude Builder Club @ AOU Egypt founding team orientation. Meet the club, understand how we work, and get ready for onboarding." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://mhmdwaelanwr.github.io/orientation/" />
-  <link rel="icon" type="image/svg+xml" href="assets/claude-spark.svg" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Claude Builder Club @ AOU Egypt" />
+  <meta property="og:title" content="Founding Team Orientation | Claude Builder Club @ AOU Egypt" />
+  <meta property="og:description" content="Meet the community, understand the teams and working rhythm, and reserve your orientation seat." />
+  <meta property="og:url" content="https://mhmdwaelanwr.github.io/orientation/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Claude Builder Club @ AOU Egypt | Orientation" />
+  <meta name="twitter:description" content="Founding team orientation registration." />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="https://claudeaou.github.io/assets/brand/logos/claude-spark.svg" />
+
+  <!-- Shared production design system from the official club site. -->
+  <link rel="stylesheet" href="https://claudeaou.github.io/assets/css/site.css?v=20261014orientation1" data-cbc-mobile-menu />
+  <!-- Orientation-only layout; brand tokens and base components stay shared. -->
+  <link rel="stylesheet" href="styles.css?v=20261014orientation1" />
 </head>
 <body>
   <header class="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="https://claudeaou.github.io/" aria-label="Claude Builder Club @ AOU Egypt home">
-        <img class="brand-mark" src="assets/claude-spark.svg" alt="" />
         <span class="brand-copy">
           <strong>Claude Builder Club</strong>
           <small>AOU Egypt · Orientation</small>
@@ -41,12 +53,20 @@
         <a href="#about">About</a>
         <a href="#agenda">Agenda</a>
         <a href="#register">Register</a>
-        <a href="https://claudeaou.github.io/" target="_blank" rel="noopener noreferrer">Main site</a>
+        <a href="#community">Community</a>
+        <a class="nav-facebook" href="https://www.facebook.com/claudeaouclub" target="_blank" rel="noopener noreferrer" aria-label="Claude Builder Club @ AOU Egypt on Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.6 22v-9h3l.45-3.5H13.6V7.27c0-1.01.28-1.7 1.74-1.7H17.2V2.44A24.8 24.8 0 0 0 14.5 2c-2.67 0-4.5 1.63-4.5 4.62V9.5H7V13h3v9h3.6Z"/></svg>
+          <span>Facebook</span>
+        </a>
+        <a class="nav-whatsapp" href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer" aria-label="Claude Builder Club @ AOU Egypt on WhatsApp">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.06 0C5.47 0 .11 5.36.11 11.95c0 2.1.55 4.16 1.6 5.96L0 24l6.24-1.64a11.93 11.93 0 0 0 5.81 1.48h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.19-1.24-6.19-3.49-8.41Z"/></svg>
+          <span>WhatsApp</span>
+        </a>
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Change color theme" title="Theme: System">
           <span class="theme-icon" aria-hidden="true">◐</span>
           <span class="theme-label">System</span>
         </button>
-        <a class="btn btn-primary nav-apply" href="#register">Reserve your seat</a>
+        <a class="btn btn-primary nav-apply" href="#register">Reserve seat</a>
       </nav>
     </div>
   </header>
@@ -54,17 +74,20 @@
   <main id="top">
     <section class="hero wrap" aria-labelledby="heroTitle">
       <div class="hero-copy">
-        <div class="hero-status live"><span></span>Registration open</div>
-        <div class="eyebrow">FOUNDING TEAM · ORIENTATION</div>
-        <h1 id="heroTitle">Meet the club. Start aligned.</h1>
+        <div class="hero-status live" id="heroStatus">Registration open</div>
+        <div class="eyebrow">FOUNDING TEAM · ORIENTATION 2026</div>
+        <h1 id="heroTitle">Start with context. Build with clarity.</h1>
         <p class="hero-club-name">Claude Builder Club @ AOU Egypt</p>
         <p class="lead">
-          A focused orientation for students joining the Claude Builder Club community — meet the team,
-          understand how we work, and know exactly what comes next.
+          Meet the community, understand the teams and working rhythm, and leave the session knowing exactly how to move from selection into active club work.
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#register">Reserve your seat</a>
           <a class="btn btn-ghost" href="#agenda">See the agenda</a>
+          <a class="btn btn-ghost hero-facebook" href="https://www.facebook.com/claudeaouclub" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.6 22v-9h3l.45-3.5H13.6V7.27c0-1.01.28-1.7 1.74-1.7H17.2V2.44A24.8 24.8 0 0 0 14.5 2c-2.67 0-4.5 1.63-4.5 4.62V9.5H7V13h3v9h3.6Z"/></svg>
+            <span>Follow on Facebook</span>
+          </a>
         </div>
         <div class="community-proof" aria-label="Orientation highlights">
           <span><i class="proof-dot" aria-hidden="true"></i>AOU Egypt students</span>
@@ -73,204 +96,283 @@
         </div>
       </div>
 
-      <aside class="hero-panel hero-brief" aria-label="Orientation details">
+      <aside class="hero-panel hero-brief" aria-label="Orientation brief">
         <div class="brief-top">
-          <div class="brief-mark"><img src="assets/claude-spark.svg" alt="" /></div>
+          <div class="brief-mark"><img src="https://claudeaou.github.io/assets/brand/logos/claude-spark.svg" alt="" /></div>
           <div>
             <span>Claude Builder Club</span>
             <strong>AOU Egypt · Orientation</strong>
           </div>
         </div>
         <div class="panel-kicker">SESSION BRIEF</div>
-        <h2>Your first step into the club.</h2>
+        <h2>Your first shared context as a team.</h2>
         <ul>
-          <li>Understand the club vision, structure and working rhythm.</li>
-          <li>Meet the teams and see where your skills can contribute.</li>
-          <li>Learn the expectations, communication flow and next steps.</li>
-          <li>Leave with a clear path into onboarding and active work.</li>
+          <li>Understand the club vision, standards and operating rhythm.</li>
+          <li>Meet the teams and understand how ownership is distributed.</li>
+          <li>See how projects, events, content and community work connect.</li>
+          <li>Know the immediate onboarding steps after the session.</li>
         </ul>
-        <div class="event-meta">
-          <div>
-            <span>Date & time</span>
-            <strong id="eventDate">To be announced</strong>
-          </div>
-          <div>
-            <span>Location</span>
-            <strong id="eventLocation">AOU Egypt</strong>
-          </div>
+        <div class="orientation-event-meta">
+          <div><span>Date & time</span><strong id="eventDate">To be announced</strong></div>
+          <div><span>Location</span><strong id="eventLocation">AOU Egypt</strong></div>
         </div>
+        <div class="brief-foot">Context · Ownership · Collaboration</div>
       </aside>
     </section>
 
     <section class="stats wrap" aria-label="Orientation overview">
       <div><strong>90</strong><span>Minutes</span></div>
-      <div><strong>4</strong><span>Core topics</span></div>
-      <div><strong>1</strong><span>Registration</span></div>
+      <div><strong>4</strong><span>Core blocks</span></div>
+      <div><strong>11</strong><span>Club teams</span></div>
       <div><strong>Email</strong><span>Confirmation</span></div>
     </section>
 
     <section id="about" class="values-section">
       <div class="wrap">
-        <div class="section-head split-head">
+        <div class="values-head">
           <div>
             <div class="eyebrow">WHY ORIENTATION</div>
-            <h2>Start with context, not confusion.</h2>
+            <h2>Get aligned before the work starts.</h2>
           </div>
           <p>
-            The goal is simple: everyone should understand the club, their role in it, and the standards we want
-            before projects, workshops and events start moving.
+            The founding team should start with one shared understanding of the club, how decisions move, how teams collaborate, and what being reliable looks like in practice.
           </p>
         </div>
         <div class="values-grid">
           <article class="value-card"><span class="value-index">01</span><h3>Vision</h3><p>Why the club exists and what we want to build for students at AOU Egypt.</p></article>
-          <article class="value-card"><span class="value-index">02</span><h3>People</h3><p>Who owns what, how teams collaborate, and how members contribute effectively.</p></article>
-          <article class="value-card"><span class="value-index">03</span><h3>Workflow</h3><p>How communication, delivery, events, projects and accountability work in practice.</p></article>
-          <article class="value-card"><span class="value-index">04</span><h3>Next step</h3><p>What happens immediately after orientation and how onboarding continues.</p></article>
+          <article class="value-card"><span class="value-index">02</span><h3>Ownership</h3><p>Who owns what, how responsibilities move, and how to communicate before blockers become problems.</p></article>
+          <article class="value-card"><span class="value-index">03</span><h3>Workflow</h3><p>How technical work, operations, media, partnerships, projects and community fit together.</p></article>
+          <article class="value-card"><span class="value-index">04</span><h3>Next step</h3><p>What happens after orientation and how members move into onboarding and real delivery.</p></article>
         </div>
       </div>
     </section>
 
-    <section id="agenda" class="section">
+    <section id="agenda" class="section section-soft">
       <div class="wrap">
-        <div class="section-head split-head">
+        <div class="section-head">
           <div>
             <div class="eyebrow">SESSION AGENDA</div>
             <h2>90 minutes. Four clear blocks.</h2>
           </div>
-          <p>Built to give you the context you need without turning orientation into another long lecture.</p>
+          <p>Enough context to start well, without turning orientation into another long lecture.</p>
         </div>
-
-        <div class="steps agenda-grid">
-          <div><b>01</b><h3>Welcome & vision</h3><p>What Claude Builder Club is, why it exists at AOU Egypt, and what success looks like.</p></div>
-          <div><b>02</b><h3>Teams & roles</h3><p>Technical, design, content, PR, community, events and operations — who does what.</p></div>
-          <div><b>03</b><h3>How we work</h3><p>Communication, ownership, expectations, collaboration, projects and event rhythm.</p></div>
-          <div><b>04</b><h3>Next steps</h3><p>Interviews, onboarding, first initiatives and how you start contributing after the session.</p></div>
+        <div class="steps orientation-steps">
+          <div><b>01</b><h3>Welcome & vision</h3><p>Why Claude Builder Club exists at AOU Egypt and what a strong year should look like.</p></div>
+          <div><b>02</b><h3>Teams & roles</h3><p>How leadership, technical, operations, media, partnerships, people and projects connect.</p></div>
+          <div><b>03</b><h3>How we work</h3><p>Communication, accountability, meetings, delivery rhythm, events and project ownership.</p></div>
+          <div><b>04</b><h3>Next steps</h3><p>Selection follow-up, onboarding, first initiatives and how you begin contributing.</p></div>
         </div>
       </div>
     </section>
 
-    <section id="register" class="section section-soft register-section">
-      <div class="wrap register-layout">
-        <div class="register-copy">
+    <section id="register" class="orientation-register section">
+      <div class="wrap orientation-register-layout">
+        <div class="orientation-register-copy">
           <div class="eyebrow">REGISTRATION</div>
           <h2>Save your seat.</h2>
           <p>
-            Register once using your university details. Your registration ID and confirmation will be sent to your email automatically.
+            Register once with your university details. Your registration ID and confirmation will be sent automatically to the email you provide.
           </p>
-          <div class="registration-points">
-            <div><b>01</b><span>Use an email you actively check.</span></div>
-            <div><b>02</b><span>Keep your registration ID for reference.</span></div>
-            <div><b>03</b><span>Watch your inbox for the final schedule and venue.</span></div>
+          <div class="orientation-points">
+            <div><b>01</b><span>Use an email address you actively check.</span></div>
+            <div><b>02</b><span>Keep the registration ID from your confirmation.</span></div>
+            <div><b>03</b><span>Watch your inbox for final timing and venue updates.</span></div>
           </div>
         </div>
 
-        <div class="form-card">
-          <div class="form-card-head">
+        <div class="orientation-form-card">
+          <div class="orientation-form-head">
             <div>
               <span class="panel-kicker">CBC · AOU EGYPT</span>
               <h3>Orientation registration</h3>
             </div>
-            <span class="secure-pill">Secure form</span>
+            <span class="orientation-secure-pill">Registration open</span>
           </div>
 
           <form id="registrationForm" method="post" target="submitFrame" novalidate>
-            <div class="field-grid">
-              <label class="field field-wide">
-                <span>Full name <em>*</em></span>
+            <div class="orientation-honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+
+            <div class="orientation-field-grid">
+              <label class="orientation-field orientation-field-wide">Full name *
                 <input name="fullName" autocomplete="name" required maxlength="100" placeholder="Your full name" />
               </label>
 
-              <label class="field field-wide">
-                <span>Email address <em>*</em></span>
+              <label class="orientation-field orientation-field-wide">Email address *
                 <input name="email" type="email" autocomplete="email" required maxlength="120" placeholder="name@example.com" />
               </label>
 
-              <label class="field">
-                <span>University ID <em>*</em></span>
+              <label class="orientation-field">AOU Student ID *
                 <input name="universityId" required maxlength="30" placeholder="e.g. 12345678" />
               </label>
 
-              <label class="field">
-                <span>Academic year <em>*</em></span>
+              <label class="orientation-field">Academic year *
                 <select name="academicYear" required>
-                  <option value="" selected disabled>Select year</option>
-                  <option>First year</option>
-                  <option>Second year</option>
-                  <option>Third year</option>
-                  <option>Fourth year</option>
+                  <option value="">Select</option>
+                  <option>1st Year</option>
+                  <option>2nd Year</option>
+                  <option>3rd Year</option>
+                  <option>4th Year</option>
                   <option>Other</option>
                 </select>
               </label>
 
-              <label class="field field-wide">
-                <span>Faculty / major <em>*</em></span>
-                <input name="faculty" required maxlength="100" placeholder="e.g. Computer Science" />
+              <label class="orientation-field">Faculty *
+                <select id="facultySelect" required>
+                  <option value="">Select your faculty</option>
+                </select>
               </label>
 
-              <label class="field">
-                <span>Phone number</span>
+              <label class="orientation-field">Programme / Major *
+                <select id="majorSelect" required disabled>
+                  <option value="">Choose a faculty first</option>
+                </select>
+              </label>
+              <input type="hidden" name="faculty" id="facultyCombined" />
+
+              <label class="orientation-field">Phone / WhatsApp
                 <input name="phone" type="tel" autocomplete="tel" maxlength="25" placeholder="01xxxxxxxxx" />
               </label>
 
-              <label class="field">
-                <span>Interested track</span>
-                <select name="track">
-                  <option value="" selected>Not sure yet</option>
-                  <option>Development</option>
-                  <option>Design</option>
-                  <option>Content Creation</option>
-                  <option>PR & Marketing</option>
-                  <option>Community & Events</option>
-                  <option>Operations</option>
+              <label class="orientation-field">Team interest
+                <select name="track" id="teamInterest">
+                  <option value="">Not sure yet</option>
                 </select>
               </label>
             </div>
 
-            <label class="consent-row">
+            <label class="check orientation-consent">
               <input type="checkbox" name="consent" value="yes" required />
-              <span>I confirm that the information above is correct and I agree to receive orientation-related emails. <em>*</em></span>
+              <span>I confirm that the information above is correct and I agree to receive orientation-related emails.</span>
             </label>
 
             <input type="hidden" name="source" value="orientation-site" />
 
-            <button class="btn btn-primary submit-button" type="submit">
+            <button class="btn btn-primary orientation-submit" type="submit">
               <span class="submit-label">Complete registration</span>
-              <span aria-hidden="true">↗</span>
+              <span aria-hidden="true">→</span>
             </button>
 
-            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
-            <p class="privacy-note">Your details are used only for Claude Builder Club @ AOU Egypt orientation and member communication.</p>
+            <p id="formMessage" class="orientation-form-message" role="status" aria-live="polite"></p>
+            <p class="orientation-privacy">Your details are used only for Claude Builder Club @ AOU Egypt orientation and member communication.</p>
           </form>
+
+          <div class="success orientation-success" id="registrationSuccess" hidden>
+            <div class="success-icon">✓</div>
+            <div class="success-kicker">REGISTRATION CONFIRMED</div>
+            <h3>You’re on the list.</h3>
+            <p class="success-lead">Your orientation registration has been received successfully.</p>
+            <div class="success-summary">
+              <div><span>Registration ID</span><strong id="successRegistrationId">—</strong></div>
+              <div><span>Event</span><strong>Founding Team Orientation</strong></div>
+            </div>
+            <div class="success-next">
+              <strong>What happens next?</strong>
+              <p>Keep an eye on your inbox. We’ll use the email you submitted for the confirmed orientation timing, venue and any updates.</p>
+            </div>
+            <div class="orientation-success-actions">
+              <a class="btn btn-dark" href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer">Join WhatsApp updates ↗</a>
+              <button class="btn btn-ghost" type="button" id="registerAnother">Register another person</button>
+            </div>
+          </div>
+
           <iframe id="submitFrame" name="submitFrame" title="Registration submission" hidden></iframe>
         </div>
       </div>
     </section>
 
-    <section class="cta-section">
+    <section class="faq-section" aria-labelledby="faqTitle">
+      <div class="wrap faq-layout">
+        <div class="faq-intro">
+          <div class="eyebrow">BEFORE YOU ATTEND</div>
+          <h2 id="faqTitle">A few useful answers.</h2>
+          <p>The session is designed to remove uncertainty before onboarding and active club work begin.</p>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>Who should register?</summary>
+            <p>Students invited to or interested in the Claude Builder Club @ AOU Egypt founding team orientation should register using their current contact details.</p>
+          </details>
+          <details>
+            <summary>Will I receive the venue and final timing?</summary>
+            <p>Yes. The email used during registration is the primary channel for confirmation and any schedule or venue updates.</p>
+          </details>
+          <details>
+            <summary>Does registering mean final team selection?</summary>
+            <p>No. Orientation registration records your attendance interest. Recruitment, interview and team-selection decisions remain separate.</p>
+          </details>
+          <details>
+            <summary>Can I update my registration?</summary>
+            <p>If you submitted incorrect information, contact the club team using the email below so the registration can be reviewed.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="community" class="community-section">
+      <div class="wrap">
+        <div class="community-card">
+          <div class="community-copy">
+            <div class="community-kicker">Stay connected</div>
+            <h2>Build with the community, not alone.</h2>
+            <p>Follow Claude Builder Club @ AOU Egypt for orientation updates, workshops, build sessions, announcements and upcoming opportunities.</p>
+          </div>
+          <div class="community-actions" aria-label="Community channels">
+            <a class="community-link facebook" href="https://www.facebook.com/claudeaouclub" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.6 22v-9h3l.45-3.5H13.6V7.27c0-1.01.28-1.7 1.74-1.7H17.2V2.44A24.8 24.8 0 0 0 14.5 2c-2.67 0-4.5 1.63-4.5 4.62V9.5H7V13h3v9h3.6Z"/></svg>
+              <span>Facebook</span>
+            </a>
+            <a class="community-link whatsapp" href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.06 0C5.47 0 .11 5.36.11 11.95c0 2.1.55 4.16 1.6 5.96L0 24l6.24-1.64a11.93 11.93 0 0 0 5.81 1.48h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.19-1.24-6.19-3.49-8.41Z"/></svg>
+              <span>WhatsApp updates</span>
+            </a>
+            <a class="community-link email" href="mailto:claudebuilder.aou@gmail.com">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              <span>Email us</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
       <div class="wrap">
         <div class="cta">
           <div>
-            <div class="cta-copy-eyebrow">BUILD TOGETHER</div>
-            <h2>Your first club session starts here.</h2>
-            <p>Register now and we will send the confirmed orientation details directly to your inbox.</p>
+            <div class="cta-copy-eyebrow">FOUNDING TEAM ORIENTATION</div>
+            <h2>Ready to start aligned?</h2>
+            <p>Reserve your seat and we’ll send the confirmed orientation details to your inbox.</p>
           </div>
-          <a class="btn btn-orange" href="#register">Register for orientation</a>
+          <a class="btn btn-orange" href="#register">Register now</a>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <a class="brand footer-brand" href="https://claudeaou.github.io/">
-        <img class="brand-mark" src="assets/claude-spark.svg" alt="" />
-        <span class="brand-copy"><strong>Claude Builder Club</strong><small>AOU Egypt</small></span>
+  <a class="floating-whatsapp" href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer" aria-label="Join orientation updates on WhatsApp">
+    <span class="wa-dot" aria-hidden="true"></span>
+    <span><strong>Orientation updates</strong><small>Join WhatsApp</small></span>
+  </a>
+
+  <footer class="footer wrap">
+    <div>
+      <strong>Claude Builder Club @ AOU Egypt</strong>
+      <div class="footer-meta-line">
+        <span>Founding Team Orientation</span>
+        <span class="dot" aria-hidden="true">·</span>
+        <span>© <span id="footerYear">2026</span></span>
+      </div>
+    </div>
+    <div class="footer-social" aria-label="Club links">
+      <a href="https://claudeaou.github.io/" target="_blank" rel="noopener noreferrer"><span>Main site</span></a>
+      <a href="https://www.facebook.com/claudeaouclub" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.6 22v-9h3l.45-3.5H13.6V7.27c0-1.01.28-1.7 1.74-1.7H17.2V2.44A24.8 24.8 0 0 0 14.5 2c-2.67 0-4.5 1.63-4.5 4.62V9.5H7V13h3v9h3.6Z"/></svg>
+        <span>Facebook</span>
       </a>
-      <p>Student AI builder community at Arab Open University – Egypt.</p>
-      <p>© <span id="year"></span> Claude Builder Club @ AOU Egypt.</p>
+      <a href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer"><span>WhatsApp</span></a>
+      <a href="mailto:claudebuilder.aou@gmail.com"><span>claudebuilder.aou@gmail.com</span></a>
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20261014orientation1"></script>
 </body>
 </html>
