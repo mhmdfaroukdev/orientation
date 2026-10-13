@@ -1,8 +1,5 @@
 const CONFIG = {
-  // Deployed Google Apps Script Web App endpoint.
   appsScriptUrl: "https://script.google.com/macros/s/AKfycbyGoQdR5xgepqns7HpyWoHjfJr4cDEMWaBFHoSzUo3uAFgjrrGZvWUKW2TvPLjIWCdy/exec",
-
-  // Keep these aligned with the values in apps-script/Code.gs.
   eventDate: "To be announced",
   eventLocation: "AOU Egypt"
 };
@@ -13,8 +10,46 @@ const submitLabel = submitButton.querySelector(".submit-label");
 const message = document.getElementById("formMessage");
 const eventDate = document.getElementById("eventDate");
 const eventLocation = document.getElementById("eventLocation");
+const themeToggle = document.getElementById("themeToggle");
+const themeLabel = themeToggle?.querySelector(".theme-label");
+const themeIcon = themeToggle?.querySelector(".theme-icon");
+const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
 
 let submitTimer;
+
+function resolveTheme(preference) {
+  return preference === "system" ? (systemTheme.matches ? "dark" : "light") : preference;
+}
+
+function applyTheme(preference) {
+  const safePreference = ["system", "light", "dark"].includes(preference) ? preference : "system";
+  const resolved = resolveTheme(safePreference);
+
+  document.documentElement.dataset.themePreference = safePreference;
+  document.documentElement.dataset.theme = resolved;
+
+  try { localStorage.setItem("cbc-theme", safePreference); } catch (_) {}
+
+  if (themeLabel) themeLabel.textContent = safePreference[0].toUpperCase() + safePreference.slice(1);
+  if (themeIcon) themeIcon.textContent = safePreference === "system" ? "◐" : safePreference === "dark" ? "☾" : "☀";
+  if (themeToggle) {
+    themeToggle.title = `Theme: ${safePreference[0].toUpperCase() + safePreference.slice(1)}`;
+    themeToggle.setAttribute("aria-label", `Change color theme. Current: ${safePreference}`);
+  }
+}
+
+function cycleTheme() {
+  const current = document.documentElement.dataset.themePreference || "system";
+  const order = ["system", "light", "dark"];
+  const next = order[(order.indexOf(current) + 1) % order.length];
+  applyTheme(next);
+}
+
+applyTheme(document.documentElement.dataset.themePreference || "system");
+themeToggle?.addEventListener("click", cycleTheme);
+systemTheme.addEventListener?.("change", () => {
+  if ((document.documentElement.dataset.themePreference || "system") === "system") applyTheme("system");
+});
 
 document.getElementById("year").textContent = new Date().getFullYear();
 eventDate.textContent = CONFIG.eventDate;
@@ -59,10 +94,7 @@ form.addEventListener("submit", (event) => {
   }
 
   if (!isConfigured()) {
-    setMessage(
-      "Registration backend is not connected yet. Add the deployed Apps Script Web App URL in app.js.",
-      "error"
-    );
+    setMessage("Registration backend is not connected yet. Please contact the club team.", "error");
     return;
   }
 
