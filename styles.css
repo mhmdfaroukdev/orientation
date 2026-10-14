@@ -4,6 +4,7 @@
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{overflow-x:hidden}
+body.has-mobile-register-bar{padding-bottom:78px}
 #register,#agenda,#faq,#event{scroll-margin-top:96px}
 
 /* ---------- Event hero ---------- */
@@ -14,7 +15,7 @@ body{overflow-x:hidden}
   gap:clamp(52px,7vw,104px);
   align-items:center;
   padding-top:clamp(72px,8vw,118px);
-  padding-bottom:clamp(68px,8vw,110px);
+  padding-bottom:clamp(68px,8vw,110px)
 }
 .event-intro{max-width:760px}
 .event-intro h1{
@@ -22,7 +23,7 @@ body{overflow-x:hidden}
   max-width:780px;
   font-size:clamp(3.4rem,7vw,6.9rem);
   line-height:.93;
-  letter-spacing:-.055em;
+  letter-spacing:-.055em
 }
 .event-intro .lead{max-width:690px;margin-top:1.45rem}
 .hero-status.live{width:max-content;display:inline-flex;align-items:center;gap:8px;margin-bottom:18px}
@@ -39,8 +40,8 @@ body{overflow-x:hidden}
 }
 .event-card::before{content:"";display:block;height:7px;background:var(--accent,#d97757)}
 .event-card-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 26px;border-bottom:1px solid var(--line)}
-.event-brand{display:flex;align-items:center;gap:12px}
-.event-brand img{width:34px;height:34px;object-fit:contain}
+.event-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.event-brand img{width:34px;height:34px;object-fit:contain;flex:0 0 auto}
 .event-brand span,.event-brand strong{display:block}
 .event-brand span{color:var(--muted);font-size:.72rem;letter-spacing:.04em}
 .event-brand strong{margin-top:2px;color:var(--ink);font-size:.94rem}
@@ -87,31 +88,38 @@ body{overflow-x:hidden}
 .registration-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:28px 32px;border-bottom:1px solid var(--line);background:var(--surface-2)}
 .registration-card-head h3{margin:5px 0 0;font-size:clamp(1.7rem,3vw,2.35rem)}
 .registration-card-head p{margin:6px 0 0;color:var(--muted);font-size:.9rem}
-.form-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--line);background:var(--surface)}
-.form-progress>div{position:relative;display:flex;align-items:center;gap:12px;padding:18px 24px}
+.form-progress{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);background:var(--surface)}
+.form-progress>div{display:flex;align-items:center;gap:12px;padding:18px 24px;transition:background .2s ease}
 .form-progress>div:not(:last-child){border-right:1px solid var(--line)}
 .form-progress span{
   width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;border:1px solid var(--line-strong);
-  border-radius:50%;color:var(--muted);font-size:.73rem;font-weight:700
+  border-radius:50%;color:var(--muted);font-size:.73rem;font-weight:700;transition:.2s ease
 }
+.form-progress .active{background:color-mix(in srgb,var(--accent,#d97757) 4%,var(--surface))}
 .form-progress .active span{border-color:var(--accent,#d97757);background:var(--accent,#d97757);color:#fff}
+.form-progress .complete span{border-color:var(--green,#788c5d);background:var(--green,#788c5d);color:#fff}
+.form-progress .complete span::before{content:"✓"}
+.form-progress .complete span{font-size:0}
+.form-progress .complete span::before{font-size:.78rem}
 .form-progress p,.form-progress strong,.form-progress small{display:block;margin:0}
 .form-progress strong{color:var(--ink);font-size:.85rem}
 .form-progress small{margin-top:2px;color:var(--muted);font-size:.72rem}
 
 #registrationForm{padding:32px}
+#registrationForm[aria-busy="true"]{cursor:progress}
 .form-block{min-width:0;margin:0;padding:0 0 32px;border:0}
 .form-block+.form-block{padding-top:30px;border-top:1px solid var(--line)}
 .form-block:last-of-type{padding-bottom:0}
 .form-block legend{width:100%;display:flex;align-items:center;gap:12px;margin:0 0 22px;padding:0}
-.form-block legend>span{
+.form-step-number{
   width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;border-radius:10px;
   background:color-mix(in srgb,var(--accent,#d97757) 10%,var(--surface));color:var(--accent,#d97757);
   font-size:.74rem;font-weight:800
 }
-.form-block legend strong,.form-block legend small{display:block}
-.form-block legend strong{color:var(--ink);font-size:1rem}
-.form-block legend small{margin-top:2px;color:var(--muted);font-size:.76rem;font-weight:400}
+.form-step-copy{display:block;min-width:0}
+.form-step-copy strong,.form-step-copy small{display:block}
+.form-step-copy strong{color:var(--ink);font-size:1rem}
+.form-step-copy small{margin-top:2px;color:var(--muted);font-size:.76rem;font-weight:400}
 .orientation-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
 .orientation-field{display:grid;gap:8px;min-width:0;color:var(--ink);font-size:.87rem;font-weight:600}
 .orientation-field-wide{grid-column:1/-1}
@@ -126,8 +134,9 @@ body{overflow-x:hidden}
 .orientation-consent{margin:0;padding:16px!important;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
 .orientation-submit{width:100%;min-height:58px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-inline:20px;cursor:pointer}
 .orientation-submit:disabled{opacity:.58;cursor:wait;transform:none!important}
-.orientation-form-message{min-height:20px;margin:13px 0 0;color:var(--muted);font-size:.82rem;font-weight:600}
+.orientation-form-message{min-height:20px;margin:13px 0 0;color:var(--muted);font-size:.82rem;font-weight:600;line-height:1.5}
 .orientation-form-message.success{color:var(--green,#788c5d)}
+.orientation-form-message.warning{color:#9a6a24}
 .orientation-form-message.error{color:#b54b3d}
 .orientation-privacy{margin:8px 0 0;color:var(--muted);font-size:.72rem;line-height:1.55}
 .register-assurance{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
@@ -161,36 +170,18 @@ body{overflow-x:hidden}
 
 /* ---------- Mobile sticky registration bar ---------- */
 .mobile-register-bar{
-  position:fixed;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  z-index:60;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding:10px 10px 10px 14px;
-  border:1px solid var(--line-strong);
-  border-radius:16px;
-  background:color-mix(in srgb,var(--surface) 94%,transparent);
-  backdrop-filter:blur(18px);
+  position:fixed;left:12px;right:12px;bottom:12px;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:10px 10px 10px 14px;border:1px solid var(--line-strong);border-radius:16px;
+  background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(18px);
   box-shadow:0 18px 50px rgba(20,20,19,.16)
 }
 .mobile-register-bar span,.mobile-register-bar strong,.mobile-register-bar small{display:block}
 .mobile-register-bar strong{font-size:.82rem;color:var(--ink)}
 .mobile-register-bar small{margin-top:2px;color:var(--green,#788c5d);font-size:.69rem}
 .mobile-register-bar button{
-  min-height:40px;
-  padding:0 16px;
-  border:0;
-  border-radius:11px;
-  background:var(--accent,#d97757);
-  color:#fff;
-  font:inherit;
-  font-size:.78rem;
-  font-weight:800;
-  cursor:pointer
+  min-height:40px;padding:0 16px;border:0;border-radius:11px;background:var(--accent,#d97757);color:#fff;
+  font:inherit;font-size:.78rem;font-weight:800;cursor:pointer
 }
 
 @media(max-width:1040px){
@@ -210,7 +201,6 @@ body{overflow-x:hidden}
 }
 
 @media(max-width:700px){
-  body{padding-bottom:78px}
   .event-hero{padding-top:54px;padding-bottom:58px}
   .event-intro h1{font-size:clamp(3rem,14vw,4.6rem)}
   .event-facts{grid-template-columns:1fr}
@@ -219,9 +209,12 @@ body{overflow-x:hidden}
   .registration-strip-inner{min-height:auto;grid-template-columns:1fr;gap:0;padding-block:10px}
   .registration-strip-inner>div{justify-content:flex-start;padding:10px 0}
   .registration-strip-inner i{display:none}
-  .form-progress{grid-template-columns:1fr}
-  .form-progress>div{padding:13px 18px;border-right:0!important;border-bottom:1px solid var(--line)}
-  .form-progress>div:last-child{border-bottom:0}
+  .form-progress{grid-template-columns:repeat(3,1fr)}
+  .form-progress>div{display:grid;grid-template-columns:auto 1fr;gap:8px;padding:12px 10px;border-right:1px solid var(--line)!important}
+  .form-progress>div:last-child{border-right:0!important}
+  .form-progress span{width:26px;height:26px}
+  .form-progress small{display:none}
+  .form-progress strong{font-size:.72rem;line-height:1.2}
   #registrationForm{padding:24px 18px}
   .registration-card-head{padding:22px 18px;gap:12px}
   .registration-card-head h3{font-size:1.55rem}
@@ -244,4 +237,6 @@ body{overflow-x:hidden}
   .event-card-head,.event-card-title,.event-facts>div,.event-card-foot{padding-left:18px;padding-right:18px}
   .registration-card{border-radius:18px}
   .register-heading h2,.compact-head h2{font-size:clamp(2.45rem,12vw,3.35rem)}
+  .registration-card-head{flex-direction:column}
+  .registration-open-pill{align-self:flex-start}
 }
