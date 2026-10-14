@@ -27,3 +27,14 @@ https://script.google.com/macros/s/AKfycbyGoQdR5xgepqns7HpyWoHjfJr4cDEMWaBFHoSzU
 - exact location
 
 Update those values in both `app.js` and `apps-script/Code.gs` when confirmed.
+
+## Deployment checklist
+
+- [ ] Apps Script Web App deployed with **Who has access: Anyone**.
+      With any restricted access setting the `/exec` endpoint answers with
+      `302 -> accounts.google.com/ServiceLogin` (GET) and `401 Unauthorized` (POST),
+      so every site registration fails before reaching the sheet.
+- [ ] New Apps Script deployment copied into `CONFIG.appsScriptUrl` in `app.js`
+      and the form `action` in `index.html` (they must match).
+- [ ] GitHub Pages enabled for this repository
+      (`https://mhmdfaroukdev.github.io/orientation/` currently returns 404).

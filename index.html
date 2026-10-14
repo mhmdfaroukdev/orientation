@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="icon" type="image/svg+xml" href="https://claudeaou.github.io/assets/brand/logos/claude-spark.svg" />
   <link rel="stylesheet" href="https://claudeaou.github.io/assets/css/site.css?v=20261014orientation3" data-cbc-mobile-menu />
-  <link rel="stylesheet" href="styles.css?v=20261014fix1" />
+  <link rel="stylesheet" href="styles.css?v=20261014fix2" />
 </head>
 <body>
   <header class="nav">
@@ -141,15 +141,19 @@
             <span class="registration-open-pill"><i></i> Registration open</span>
           </div>
 
-          <div class="form-progress" aria-label="Registration sections">
+          <div class="form-progress" role="group" aria-label="Registration sections">
             <div class="active"><span>1</span><p><strong>Your details</strong><small>Personal information</small></p></div>
             <div><span>2</span><p><strong>University</strong><small>Academic details</small></p></div>
-            <div><span>3</span><p><strong>Confirm</strong><small>Submit & receive ID</small></p></div>
+            <div><span>3</span><p><strong>Confirm</strong><small>Submit &amp; receive ID</small></p></div>
           </div>
 
-          <form id="registrationForm" method="post" target="submitFrame" novalidate aria-busy="false">
+          <form id="registrationForm" method="post" action="https://script.google.com/macros/s/AKfycbyGoQdR5xgepqns7HpyWoHjfJr4cDEMWaBFHoSzUo3uAFgjrrGZvWUKW2TvPLjIWCdy/exec" target="submitFrame" novalidate aria-busy="false">
+            <noscript>
+              <p class="orientation-form-message error">JavaScript is disabled in your browser. Enable it to complete the registration form.</p>
+            </noscript>
+
             <div class="orientation-honeypot" aria-hidden="true">
-              <label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+              <label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" readonly /></label>
             </div>
 
             <fieldset class="form-block">
@@ -159,7 +163,7 @@
               </legend>
               <div class="orientation-field-grid">
                 <label class="orientation-field orientation-field-wide">Full name *
-                  <input name="fullName" autocomplete="name" required maxlength="100" placeholder="Your full name" />
+                  <input type="text" name="fullName" autocomplete="name" required maxlength="100" placeholder="Your full name" />
                 </label>
 
                 <label class="orientation-field orientation-field-wide">Email address *
@@ -168,7 +172,7 @@
                 </label>
 
                 <label class="orientation-field">AOU Student ID *
-                  <input name="universityId" required maxlength="30" placeholder="e.g. 12345678" />
+                  <input type="text" name="universityId" required maxlength="30" placeholder="e.g. 12345678" />
                 </label>
 
                 <label class="orientation-field">Phone / WhatsApp
@@ -228,6 +232,7 @@
               </label>
 
               <input type="hidden" name="source" value="orientation-site" />
+              <input type="hidden" name="clientToken" id="clientToken" value="" />
 
               <button class="btn btn-primary orientation-submit" type="submit">
                 <span class="submit-label">Complete registration</span>
@@ -243,7 +248,7 @@
             <div class="success-icon">✓</div>
             <div class="success-kicker">REGISTRATION CONFIRMED</div>
             <h3>Your seat is saved.</h3>
-            <p class="success-lead">Your registration has been received successfully. Keep your reference ID and check your inbox for confirmation.</p>
+            <p class="success-lead" id="successLead">Your registration has been received successfully. Keep your reference ID and check your inbox for confirmation.</p>
 
             <div class="success-summary">
               <div><span>Registration ID</span><strong id="successRegistrationId">—</strong></div>
@@ -264,7 +269,7 @@
           <iframe id="submitFrame" name="submitFrame" title="Registration submission" hidden></iframe>
         </div>
 
-        <div class="register-assurance" aria-label="Registration notes">
+        <div class="register-assurance" role="group" aria-label="Registration notes">
           <div><strong>One submission</strong><span>Duplicate email registrations are blocked.</span></div>
           <div><strong>Email confirmation</strong><span>Your registration ID is sent automatically.</span></div>
           <div><strong>Need help?</strong><a href="mailto:claudebuilder.aou@gmail.com">claudebuilder.aou@gmail.com</a></div>
@@ -301,8 +306,8 @@
         </div>
 
         <div class="agenda-list">
-          <article><span class="agenda-time">01</span><div><h3>Welcome & club vision</h3><p>Why Claude Builder Club exists at AOU Egypt and what we want to build this year.</p></div></article>
-          <article><span class="agenda-time">02</span><div><h3>Teams & responsibilities</h3><p>How technical, operations, media, partnerships, projects, HR and community work together.</p></div></article>
+          <article><span class="agenda-time">01</span><div><h3>Welcome &amp; club vision</h3><p>Why Claude Builder Club exists at AOU Egypt and what we want to build this year.</p></div></article>
+          <article><span class="agenda-time">02</span><div><h3>Teams &amp; responsibilities</h3><p>How technical, operations, media, partnerships, projects, HR and community work together.</p></div></article>
           <article><span class="agenda-time">03</span><div><h3>How we work</h3><p>Communication, ownership, meetings, delivery rhythm and accountability.</p></div></article>
           <article><span class="agenda-time">04</span><div><h3>Next steps</h3><p>Onboarding, first initiatives and how members start contributing after orientation.</p></div></article>
         </div>
@@ -361,14 +366,14 @@
         <span>© <span id="footerYear">2026</span></span>
       </div>
     </div>
-    <div class="footer-social" aria-label="Club links">
+    <nav class="footer-social" aria-label="Club links">
       <a href="https://claudeaou.github.io/" target="_blank" rel="noopener noreferrer"><span>Main site</span></a>
       <a href="https://www.facebook.com/claudeaouclub" target="_blank" rel="noopener noreferrer"><span>Facebook</span></a>
       <a href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer"><span>WhatsApp</span></a>
       <a href="mailto:claudebuilder.aou@gmail.com"><span>Email</span></a>
-    </div>
+    </nav>
   </footer>
 
-  <script src="app.js?v=20261014fix1"></script>
+  <script src="app.js?v=20261014fix2"></script>
 </body>
 </html>
