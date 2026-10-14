@@ -33,7 +33,15 @@ function doGet() {
 
 function doPost(e) {
   try {
-    const payload = normalizePayload_(e && e.parameter ? e.parameter : {});
+    const parameters = e && e.parameter ? e.parameter : {};
+    const clientToken = String(parameters.clientToken || '').slice(0, 64);
+    const respond = payload => iframeResponse_(Object.assign({ clientToken: clientToken }, payload));
+
+    if (String(parameters.website || '').trim()) {
+      return respond({ ok: false, message: 'We could not complete this registration.' });
+    }
+
+    const payload = normalizePayload_(parameters);
     validatePayload_(payload);
 
     const lock = LockService.getScriptLock();
@@ -44,13 +52,17 @@ function doPost(e) {
       const duplicate = findRegistrationByEmail_(sheet, payload.email);
 
       if (duplicate) {
-        return iframeResponse_({
+        return respond({
           ok: false,
           message: 'This email is already registered for orientation.'
         });
       }
 
-      const registrationId = createRegistrationId_();
+      let registrationId = createRegistrationId_();
+      for (let attempt = 0; attempt < 5 && findRegistrationRow_(sheet, 2, registrationId) !== -1; attempt++) {
+        registrationId = createRegistrationId_();
+      }
+
       const row = [
         new Date(),
         registrationId,
@@ -67,20 +79,25 @@ function doPost(e) {
       ];
 
       sheet.appendRow(row);
-      const rowNumber = sheet.getLastRow();
+      const rowNumber = findRegistrationRow_(sheet, 2, registrationId);
 
       let emailStatus = 'Sent';
+      let emailSent = true;
       try {
         sendConfirmationEmail_(payload, registrationId);
       } catch (emailError) {
+        emailSent = false;
         emailStatus = 'Failed: ' + String(emailError.message || emailError).slice(0, 160);
       }
 
-      sheet.getRange(rowNumber, 11).setValue(emailStatus);
+      if (rowNumber !== -1) {
+        sheet.getRange(rowNumber, 11).setValue(emailStatus);
+      }
 
-      return iframeResponse_({
+      return respond({
         ok: true,
         registrationId: registrationId,
+        emailSent: emailSent,
         message: 'Registration completed successfully.'
       });
     } finally {
@@ -89,6 +106,7 @@ function doPost(e) {
   } catch (error) {
     return iframeResponse_({
       ok: false,
+      clientToken: e && e.parameter ? String(e.parameter.clientToken || '').slice(0, 64) : '',
       message: friendlyError_(error)
     });
   }
@@ -115,16 +133,31 @@ function sendOrientationReminder() {
 function sendBulkEmail_(mode) {
   const sheet = getRegistrationSheet_();
   const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return;
+  if (lastRow < 2) return { sent: 0, skipped: 0, failed: 0 };
+
+  let quotaLeft = -1;
+  try {
+    quotaLeft = MailApp.getRemainingDailyQuota();
+  } catch (_) {
+    quotaLeft = -1;
+  }
 
   const values = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
-  let sent = 0;
+  const summary = { sent: 0, skipped: 0, failed: 0 };
 
   values.forEach((row, index) => {
     const fullName = String(row[2] || '').trim();
     const email = String(row[3] || '').trim();
     const registrationId = String(row[1] || '').trim();
     if (!email) return;
+
+    const statusCell = sheet.getRange(index + 2, 11);
+
+    if (quotaLeft === 0) {
+      summary.skipped += 1;
+      statusCell.setValue('Skipped: daily email quota exhausted');
+      return;
+    }
 
     const subject = mode === 'reminder'
       ? `Reminder: ${CONFIG.EVENT_NAME} | ${CONFIG.CLUB_NAME}`
@@ -153,21 +186,29 @@ function sendBulkEmail_(mode) {
       CONFIG.CLUB_NAME
     ].join('\n');
 
-    MailApp.sendEmail({
-      to: email,
-      subject,
-      body: text,
-      htmlBody: html,
-      name: CONFIG.CLUB_NAME,
-      replyTo: CONFIG.CONTACT_EMAIL
-    });
+    try {
+      MailApp.sendEmail({
+        to: email,
+        subject,
+        body: text,
+        htmlBody: html,
+        name: CONFIG.CLUB_NAME,
+        replyTo: CONFIG.CONTACT_EMAIL
+      });
 
-    sheet.getRange(index + 2, 11).setValue(mode === 'reminder' ? 'Reminder sent' : 'Invite sent');
-    sent += 1;
+      if (quotaLeft > 0) quotaLeft -= 1;
+      statusCell.setValue(mode === 'reminder' ? 'Reminder sent' : 'Invite sent');
+      summary.sent += 1;
+    } catch (error) {
+      summary.failed += 1;
+      statusCell.setValue('Failed: ' + String(error.message || error).slice(0, 160));
+    }
+
     Utilities.sleep(120);
   });
 
-  console.log(`Sent ${sent} ${mode} email(s).`);
+  console.log(`Bulk ${mode}: ${summary.sent} sent, ${summary.failed} failed, ${summary.skipped} skipped.`);
+  return summary;
 }
 
 function sendConfirmationEmail_(payload, registrationId) {
@@ -268,13 +309,22 @@ function getRegistrationSheet_() {
 }
 
 function findRegistrationByEmail_(sheet, email) {
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return null;
+  const row = findRegistrationRow_(sheet, 4, email);
+  return row === -1 ? null : row;
+}
 
-  const emails = sheet.getRange(2, 4, lastRow - 1, 1).getDisplayValues().flat();
-  const wanted = email.toLowerCase();
-  const index = emails.findIndex(value => String(value).trim().toLowerCase() === wanted);
-  return index === -1 ? null : index + 2;
+function findRegistrationRow_(sheet, columnIndex, value) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return -1;
+
+  const wanted = String(value || '').trim().toLowerCase();
+  if (!wanted) return -1;
+
+  const values = sheet.getRange(2, columnIndex, lastRow - 1, 1).getDisplayValues().flat();
+  for (let i = values.length - 1; i >= 0; i--) {
+    if (String(values[i]).trim().toLowerCase() === wanted) return i + 2;
+  }
+  return -1;
 }
 
 function normalizePayload_(p) {
@@ -294,6 +344,9 @@ function normalizePayload_(p) {
 function validatePayload_(p) {
   if (!p.fullName || !p.email || !p.universityId || !p.faculty || !p.academicYear) {
     throw new Error('Please complete all required registration fields.');
+  }
+  if (p.faculty.indexOf(' · ') === -1) {
+    throw new Error('Please select both your faculty and your programme / major.');
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) {
     throw new Error('Please enter a valid email address.');
@@ -333,7 +386,17 @@ function escapeHtml_(value) {
     .replace(/'/g, '&#039;');
 }
 
+const SAFE_ERRORS = [
+  'Please complete all required registration fields.',
+  'Please select both your faculty and your programme / major.',
+  'Please enter a valid email address.',
+  'Consent is required to complete registration.'
+];
+
 function friendlyError_(error) {
   const message = String(error && error.message ? error.message : error || 'Unknown error');
-  return message.length > 220 ? 'We could not complete your registration. Please contact the club team.' : message;
+  const safe = SAFE_ERRORS.find(prefix => message.indexOf(prefix) === 0);
+  if (safe) return message;
+  console.error(message);
+  return 'We could not complete your registration. Please contact the club team.';
 }

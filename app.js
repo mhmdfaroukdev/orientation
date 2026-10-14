@@ -68,6 +68,7 @@ const facultyCombined = document.getElementById("facultyCombined");
 const teamInterest = document.getElementById("teamInterest");
 const successPanel = document.getElementById("registrationSuccess");
 const successRegistrationId = document.getElementById("successRegistrationId");
+const successLead = document.getElementById("successLead");
 const registerAnother = document.getElementById("registerAnother");
 const nav = document.querySelector(".nav");
 const navContainer = document.querySelector(".nav-links");
@@ -79,6 +80,7 @@ const formBlocks = [...document.querySelectorAll("#registrationForm .form-block"
 
 let submitTimer;
 let previousMenuFocus = null;
+let activeSubmitToken = "";
 
 function readThemePreference() {
   try { return localStorage.getItem(THEME_KEY) || "system"; }
@@ -422,6 +424,11 @@ form?.addEventListener("submit", event => {
     return;
   }
 
+  const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  const tokenField = form.elements.namedItem("clientToken");
+  if (tokenField && "value" in tokenField) tokenField.value = token;
+  activeSubmitToken = token;
+
   form.action = CONFIG.appsScriptUrl;
   setSubmitting(true);
   setMessage("Sending your registration…");
@@ -429,6 +436,7 @@ form?.addEventListener("submit", event => {
 
   clearTimeout(submitTimer);
   submitTimer = setTimeout(() => {
+    if (activeSubmitToken !== token) return;
     setSubmitting(false);
     setMessage("We sent the request but did not receive confirmation yet. Please wait a moment and check your email before trying again.", "warning");
   }, 20000);
@@ -451,12 +459,23 @@ window.addEventListener("message", event => {
   const data = event.data;
   if (!data || data.source !== "cbc-orientation") return;
   if (!isTrustedAppsScriptOrigin(event.origin)) return;
+  if (!activeSubmitToken) return;
+
+  const responseToken = typeof data.clientToken === "string" ? data.clientToken : "";
+  if (responseToken && responseToken !== activeSubmitToken) return;
+  if (successPanel && !successPanel.hidden) return;
 
   clearTimeout(submitTimer);
   setSubmitting(false);
+  activeSubmitToken = "";
 
   if (data.ok) {
     if (successRegistrationId) successRegistrationId.textContent = data.registrationId || "Confirmed";
+    if (successLead) {
+      successLead.textContent = data.emailSent === false
+        ? "Your registration was received, but the confirmation email could not be sent. Contact claudebuilder.aou@gmail.com and share your registration ID so the team can confirm it."
+        : "Your registration has been received successfully. Keep your reference ID and check your inbox for confirmation.";
+    }
     if (form) form.hidden = true;
     if (successPanel) successPanel.hidden = false;
     setMessage("");
@@ -468,6 +487,8 @@ window.addEventListener("message", event => {
 
 registerAnother?.addEventListener("click", () => {
   if (!form || !successPanel) return;
+  clearTimeout(submitTimer);
+  activeSubmitToken = "";
   successPanel.hidden = true;
   form.hidden = false;
   form.reset();
@@ -478,5 +499,7 @@ registerAnother?.addEventListener("click", () => {
   setMessage("");
   setSubmitting(false);
   syncFormProgress(formBlocks[0] || null);
-  form.querySelector("input:not([type='hidden'])")?.focus({ preventScroll: true });
+  const tokenField = form.elements.namedItem("clientToken");
+  if (tokenField && "value" in tokenField) tokenField.value = "";
+  form.querySelector("input:not([type='hidden']):not([name='website'])")?.focus({ preventScroll: true });
 });
