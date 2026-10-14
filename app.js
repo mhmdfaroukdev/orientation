@@ -74,8 +74,11 @@ const navContainer = document.querySelector(".nav-links");
 const themeToggle = document.getElementById("themeToggle");
 const themeLabel = themeToggle?.querySelector(".theme-label");
 const themeIcon = themeToggle?.querySelector(".theme-icon");
+const progressItems = [...document.querySelectorAll(".form-progress > div")];
+const formBlocks = [...document.querySelectorAll("#registrationForm .form-block")];
 
 let submitTimer;
+let previousMenuFocus = null;
 
 function readThemePreference() {
   try { return localStorage.getItem(THEME_KEY) || "system"; }
@@ -203,11 +206,13 @@ function initMobileMenu() {
   toggle.className = "mobile-menu-toggle";
   toggle.setAttribute("aria-label", "Open navigation menu");
   toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-controls", "mobileMenu");
   toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>';
   navContainer.insertBefore(toggle, navContainer.querySelector(".nav-apply") || null);
 
   const shell = document.createElement("div");
   shell.className = "mobile-menu-shell";
+  shell.id = "mobileMenu";
   shell.setAttribute("aria-hidden", "true");
   shell.innerHTML = `
     <button class="mobile-menu-backdrop" type="button" aria-label="Close navigation menu"></button>
@@ -230,43 +235,68 @@ function initMobileMenu() {
     </aside>`;
   document.body.appendChild(shell);
 
+  const panel = shell.querySelector(".mobile-menu-panel");
   const closeBtn = shell.querySelector(".mobile-menu-close");
   const backdrop = shell.querySelector(".mobile-menu-backdrop");
   const themeButton = shell.querySelector(".mobile-menu-theme");
   const registerButton = shell.querySelector(".mobile-menu-apply");
   const viewport = window.matchMedia("(max-width: 760px)");
 
+  const focusables = () => [...panel.querySelectorAll('a[href],button:not([disabled])')].filter(el => el.offsetParent !== null);
+
   const open = () => {
     if (!viewport.matches) return;
+    previousMenuFocus = document.activeElement;
     shell.classList.add("is-open");
     shell.setAttribute("aria-hidden", "false");
     toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Close navigation menu");
     document.body.classList.add("mobile-menu-open");
     setTimeout(() => closeBtn?.focus({ preventScroll: true }), reducedMotion ? 0 : 60);
   };
 
-  const close = () => {
+  const close = (restoreFocus = true) => {
     shell.classList.remove("is-open");
     shell.setAttribute("aria-hidden", "true");
     toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open navigation menu");
     document.body.classList.remove("mobile-menu-open");
+    if (restoreFocus && previousMenuFocus instanceof HTMLElement) previousMenuFocus.focus?.({ preventScroll: true });
+    previousMenuFocus = null;
   };
 
   toggle.addEventListener("click", () => shell.classList.contains("is-open") ? close() : open());
-  closeBtn?.addEventListener("click", close);
-  backdrop?.addEventListener("click", close);
-  shell.querySelectorAll(".mobile-menu-nav a").forEach(link => link.addEventListener("click", close));
+  closeBtn?.addEventListener("click", () => close());
+  backdrop?.addEventListener("click", () => close());
+  shell.querySelectorAll(".mobile-menu-nav a").forEach(link => link.addEventListener("click", () => close(false)));
   themeButton?.addEventListener("click", cycleTheme);
   registerButton?.addEventListener("click", () => {
-    close();
+    close(false);
     setTimeout(() => document.getElementById("register")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" }), 40);
   });
 
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && shell.classList.contains("is-open")) close();
+    if (!shell.classList.contains("is-open")) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const list = focusables();
+    if (!list.length) return;
+    const first = list[0];
+    const last = list[list.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 
-  viewport.addEventListener?.("change", event => { if (!event.matches) close(); });
+  viewport.addEventListener?.("change", event => { if (!event.matches) close(false); });
   applyTheme(readThemePreference());
 }
 
@@ -289,7 +319,11 @@ function initMobileRegisterButton() {
   let heroVisible = true;
   let registerVisible = false;
 
-  const sync = () => { bar.hidden = !mobile.matches || heroVisible || registerVisible; };
+  const sync = () => {
+    const visible = mobile.matches && !heroVisible && !registerVisible;
+    bar.hidden = !visible;
+    document.body.classList.toggle("has-mobile-register-bar", visible);
+  };
 
   if ("IntersectionObserver" in window) {
     if (hero) new IntersectionObserver(([entry]) => { heroVisible = entry.isIntersecting; sync(); }, { threshold: .12 }).observe(hero);
@@ -299,6 +333,33 @@ function initMobileRegisterButton() {
   mobile.addEventListener?.("change", sync);
   sync();
 }
+
+function requiredFieldsAreValid(block) {
+  const required = [...block.querySelectorAll("input[required],select[required],textarea[required]")];
+  return required.length > 0 && required.every(field => field.checkValidity());
+}
+
+function syncFormProgress(activeBlock = null) {
+  if (!progressItems.length || !formBlocks.length) return;
+  let activeIndex = activeBlock ? formBlocks.indexOf(activeBlock) : -1;
+  if (activeIndex < 0) activeIndex = formBlocks.findIndex(block => !requiredFieldsAreValid(block));
+  if (activeIndex < 0) activeIndex = formBlocks.length - 1;
+
+  progressItems.forEach((item, index) => {
+    const complete = index < formBlocks.length && requiredFieldsAreValid(formBlocks[index]);
+    item.classList.toggle("active", index === activeIndex);
+    item.classList.toggle("complete", complete && index !== activeIndex);
+    item.setAttribute("aria-current", index === activeIndex ? "step" : "false");
+  });
+}
+
+form?.addEventListener("focusin", event => {
+  const block = event.target instanceof Element ? event.target.closest(".form-block") : null;
+  if (block) syncFormProgress(block);
+});
+form?.addEventListener("input", () => syncFormProgress());
+form?.addEventListener("change", () => syncFormProgress());
+syncFormProgress();
 
 initNav();
 initMobileMenu();
@@ -314,9 +375,10 @@ function setMessage(text, type = "") {
 }
 
 function setSubmitting(submitting) {
-  if (!submitButton || !submitLabel) return;
+  if (!submitButton || !submitLabel || !form) return;
   submitButton.disabled = submitting;
   submitLabel.textContent = submitting ? "Registering…" : "Complete registration";
+  form.setAttribute("aria-busy", submitting ? "true" : "false");
 }
 
 function validateField(field) {
@@ -343,11 +405,15 @@ form?.addEventListener("submit", event => {
   }
 
   const fields = [...form.querySelectorAll("input, select, textarea")].filter(field => field.name !== "website");
-  const allValid = fields.every(validateField);
+  const validity = fields.map(validateField);
+  const allValid = validity.every(Boolean);
 
   if (!facultyCombined?.value || !allValid || !form.checkValidity()) {
     setMessage("Please complete all required fields before submitting.", "error");
-    form.querySelector(":invalid")?.focus();
+    const firstInvalid = form.querySelector(":invalid");
+    firstInvalid?.focus();
+    firstInvalid?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    syncFormProgress(firstInvalid?.closest?.(".form-block") || null);
     return;
   }
 
@@ -364,13 +430,27 @@ form?.addEventListener("submit", event => {
   clearTimeout(submitTimer);
   submitTimer = setTimeout(() => {
     setSubmitting(false);
-    setMessage("Your registration was sent. If the confirmation email does not arrive shortly, contact the club team.", "success");
-  }, 15000);
+    setMessage("We sent the request but did not receive confirmation yet. Please wait a moment and check your email before trying again.", "warning");
+  }, 20000);
 });
+
+function isTrustedAppsScriptOrigin(origin) {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    return url.protocol === "https:" && (
+      url.hostname === "script.google.com" ||
+      url.hostname.endsWith(".googleusercontent.com")
+    );
+  } catch (_) {
+    return false;
+  }
+}
 
 window.addEventListener("message", event => {
   const data = event.data;
   if (!data || data.source !== "cbc-orientation") return;
+  if (!isTrustedAppsScriptOrigin(event.origin)) return;
 
   clearTimeout(submitTimer);
   setSubmitting(false);
@@ -396,5 +476,7 @@ registerAnother?.addEventListener("click", () => {
   syncFacultyValue();
   form.querySelectorAll("[aria-invalid]").forEach(el => el.removeAttribute("aria-invalid"));
   setMessage("");
+  setSubmitting(false);
+  syncFormProgress(formBlocks[0] || null);
   form.querySelector("input:not([type='hidden'])")?.focus({ preventScroll: true });
 });
