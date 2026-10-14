@@ -1,10 +1,10 @@
 const CONFIG = {
   appsScriptUrl: "https://script.google.com/macros/s/AKfycbyGoQdR5xgepqns7HpyWoHjfJr4cDEMWaBFHoSzUo3uAFgjrrGZvWUKW2TvPLjIWCdy/exec",
   eventDate: "To be announced",
+  eventTime: "To be announced",
   eventLocation: "AOU Egypt"
 };
 
-// Kept aligned with the faculty/programme taxonomy used on claudeaou.github.io.
 const ACADEMICS = {
   "Faculty of Business Studies": [
     "Business Studies — Accounting",
@@ -62,11 +62,6 @@ const form = document.getElementById("registrationForm");
 const submitButton = form?.querySelector("button[type='submit']");
 const submitLabel = submitButton?.querySelector(".submit-label");
 const message = document.getElementById("formMessage");
-const eventDate = document.getElementById("eventDate");
-const eventLocation = document.getElementById("eventLocation");
-const themeToggle = document.getElementById("themeToggle");
-const themeLabel = themeToggle?.querySelector(".theme-label");
-const themeIcon = themeToggle?.querySelector(".theme-icon");
 const facultySelect = document.getElementById("facultySelect");
 const majorSelect = document.getElementById("majorSelect");
 const facultyCombined = document.getElementById("facultyCombined");
@@ -74,14 +69,17 @@ const teamInterest = document.getElementById("teamInterest");
 const successPanel = document.getElementById("registrationSuccess");
 const successRegistrationId = document.getElementById("successRegistrationId");
 const registerAnother = document.getElementById("registerAnother");
-const heroStatus = document.getElementById("heroStatus");
 const nav = document.querySelector(".nav");
 const navContainer = document.querySelector(".nav-links");
+const themeToggle = document.getElementById("themeToggle");
+const themeLabel = themeToggle?.querySelector(".theme-label");
+const themeIcon = themeToggle?.querySelector(".theme-icon");
 
 let submitTimer;
 
 function readThemePreference() {
-  try { return localStorage.getItem(THEME_KEY) || "system"; } catch (_) { return "system"; }
+  try { return localStorage.getItem(THEME_KEY) || "system"; }
+  catch (_) { return "system"; }
 }
 
 function resolvedTheme(preference) {
@@ -97,9 +95,9 @@ function applyTheme(preference) {
 
   try { localStorage.setItem(THEME_KEY, pref); } catch (_) {}
 
-  const text = pref === "system" ? "System" : (pref === "dark" ? "Dark" : "Light");
+  const text = pref === "system" ? "System" : pref === "dark" ? "Dark" : "Light";
   if (themeLabel) themeLabel.textContent = text;
-  if (themeIcon) themeIcon.textContent = pref === "system" ? "◐" : (actual === "dark" ? "☾" : "☀");
+  if (themeIcon) themeIcon.textContent = pref === "system" ? "◐" : actual === "dark" ? "☾" : "☀";
   if (themeToggle) {
     themeToggle.title = `Theme: ${text} · tap to change`;
     themeToggle.setAttribute("aria-label", `Theme: ${text}. Tap to change.`);
@@ -110,7 +108,7 @@ function applyTheme(preference) {
 
 function cycleTheme() {
   const current = readThemePreference();
-  const next = current === "system" ? "light" : (current === "light" ? "dark" : "system");
+  const next = current === "system" ? "light" : current === "light" ? "dark" : "system";
   applyTheme(next);
 }
 
@@ -120,12 +118,18 @@ themeMedia.addEventListener?.("change", () => {
   if (readThemePreference() === "system") applyTheme("system");
 });
 
-function fillAcademics() {
-  if (!facultySelect || !majorSelect) return;
-  facultySelect.innerHTML = '<option value="">Select your faculty</option>' +
-    Object.keys(ACADEMICS).map(name => `<option value="${name}">${name}</option>`).join("");
-  fillMajors("");
+function setEventDetails() {
+  const date = document.getElementById("eventDate");
+  const time = document.getElementById("eventTime");
+  const location = document.getElementById("eventLocation");
+  const year = document.getElementById("footerYear");
+
+  if (date) date.textContent = CONFIG.eventDate;
+  if (time) time.textContent = CONFIG.eventTime;
+  if (location) location.textContent = CONFIG.eventLocation;
+  if (year) year.textContent = String(new Date().getFullYear());
 }
+setEventDetails();
 
 function fillMajors(faculty) {
   if (!majorSelect) return;
@@ -135,6 +139,13 @@ function fillMajors(faculty) {
     ? '<option value="">Select your programme / major</option>' + majors.map(name => `<option value="${name}">${name}</option>`).join("")
     : '<option value="">Choose a faculty first</option>';
   syncFacultyValue();
+}
+
+function fillAcademics() {
+  if (!facultySelect) return;
+  facultySelect.innerHTML = '<option value="">Select your faculty</option>' +
+    Object.keys(ACADEMICS).map(name => `<option value="${name}">${name}</option>`).join("");
+  fillMajors("");
 }
 
 function syncFacultyValue() {
@@ -155,31 +166,33 @@ majorSelect?.addEventListener("change", syncFacultyValue);
 fillAcademics();
 fillTeams();
 
-if (eventDate) eventDate.textContent = CONFIG.eventDate;
-if (eventLocation) eventLocation.textContent = CONFIG.eventLocation;
-const footerYear = document.getElementById("footerYear");
-if (footerYear) footerYear.textContent = String(new Date().getFullYear());
-
-function initNavBehavior() {
+function initNav() {
   if (!nav) return;
+
   const syncScrolled = () => nav.classList.toggle("scrolled", window.scrollY > 10);
   syncScrolled();
   window.addEventListener("scroll", syncScrolled, { passive: true });
 
   const anchors = [...document.querySelectorAll('.nav-links a[href^="#"]')];
-  const sections = anchors
-    .map(anchor => document.querySelector(anchor.getAttribute("href")))
-    .filter(Boolean);
+  const targets = anchors.map(anchor => ({
+    anchor,
+    section: document.querySelector(anchor.getAttribute("href"))
+  })).filter(item => item.section);
 
-  if (!("IntersectionObserver" in window) || !sections.length) return;
+  if (!("IntersectionObserver" in window)) return;
+
   const observer = new IntersectionObserver(entries => {
-    const visible = entries
+    const active = entries
       .filter(entry => entry.isIntersecting)
       .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (!visible) return;
-    anchors.forEach(anchor => anchor.classList.toggle("is-active", anchor.getAttribute("href") === `#${visible.target.id}`));
-  }, { rootMargin: "-25% 0px -60% 0px", threshold: [0, .2, .5] });
-  sections.forEach(section => observer.observe(section));
+
+    if (!active) return;
+    targets.forEach(({ anchor, section }) => {
+      anchor.classList.toggle("is-active", section === active.target);
+    });
+  }, { rootMargin: "-28% 0px -58% 0px", threshold: [0, .15, .35] });
+
+  targets.forEach(({ section }) => observer.observe(section));
 }
 
 function initMobileMenu() {
@@ -190,13 +203,11 @@ function initMobileMenu() {
   toggle.className = "mobile-menu-toggle";
   toggle.setAttribute("aria-label", "Open navigation menu");
   toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-controls", "mobileMenu");
-  toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="menu-line" d="M4 6h16"/><path class="menu-line" d="M4 12h16"/><path class="menu-line" d="M4 18h16"/></svg>';
+  toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>';
   navContainer.insertBefore(toggle, navContainer.querySelector(".nav-apply") || null);
 
   const shell = document.createElement("div");
   shell.className = "mobile-menu-shell";
-  shell.id = "mobileMenu";
   shell.setAttribute("aria-hidden", "true");
   shell.innerHTML = `
     <button class="mobile-menu-backdrop" type="button" aria-label="Close navigation menu"></button>
@@ -207,111 +218,91 @@ function initMobileMenu() {
       </div>
       <div class="mobile-menu-status live">Registration open</div>
       <nav class="mobile-menu-nav" aria-label="Mobile navigation links">
-        <a href="#top">Home</a>
-        <a href="#about">About</a>
+        <a href="#event">Event details</a>
+        <a href="#register">Registration</a>
         <a href="#agenda">Agenda</a>
-        <a href="#register">Register</a>
-        <a href="#community">Community</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://claudeaou.github.io/" target="_blank" rel="noopener noreferrer">Main club site ↗</a>
       </nav>
       <div class="mobile-menu-divider" aria-hidden="true"></div>
-      <div class="mobile-menu-socials">
-        <a class="mobile-menu-social facebook" href="https://www.facebook.com/claudeaouclub" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.6 22v-9h3l.45-3.5H13.6V7.27c0-1.01.28-1.7 1.74-1.7H17.2V2.44A24.8 24.8 0 0 0 14.5 2c-2.67 0-4.5 1.63-4.5 4.62V9.5H7V13h3v9h3.6Z"/></svg><span>Facebook</span></a>
-        <a class="mobile-menu-social whatsapp" href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.06 0C5.47 0 .11 5.36.11 11.95c0 2.1.55 4.16 1.6 5.96L0 24l6.24-1.64a11.93 11.93 0 0 0 5.81 1.48h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.19-1.24-6.19-3.49-8.41Z"/></svg><span>WhatsApp</span></a>
-      </div>
       <button class="mobile-menu-theme" type="button"><span>Appearance</span><span data-mobile-theme>System</span></button>
-      <div class="mobile-menu-actions"><button class="mobile-menu-apply" type="button">Reserve your seat</button></div>
+      <div class="mobile-menu-actions"><button class="mobile-menu-apply" type="button">Register now</button></div>
     </aside>`;
   document.body.appendChild(shell);
 
-  const panel = shell.querySelector(".mobile-menu-panel");
   const closeBtn = shell.querySelector(".mobile-menu-close");
   const backdrop = shell.querySelector(".mobile-menu-backdrop");
-  const drawerTheme = shell.querySelector(".mobile-menu-theme");
-  const drawerApply = shell.querySelector(".mobile-menu-apply");
+  const themeButton = shell.querySelector(".mobile-menu-theme");
+  const registerButton = shell.querySelector(".mobile-menu-apply");
   const viewport = window.matchMedia("(max-width: 760px)");
-  let previousFocus = null;
 
-  const focusables = () => [...panel.querySelectorAll('a[href],button:not([disabled]):not([hidden])')].filter(el => el.offsetParent !== null);
   const open = () => {
     if (!viewport.matches) return;
-    previousFocus = document.activeElement;
     shell.classList.add("is-open");
     shell.setAttribute("aria-hidden", "false");
     toggle.setAttribute("aria-expanded", "true");
-    toggle.setAttribute("aria-label", "Close navigation menu");
     document.body.classList.add("mobile-menu-open");
-    setTimeout(() => closeBtn?.focus({ preventScroll: true }), reducedMotion ? 0 : 70);
+    setTimeout(() => closeBtn?.focus({ preventScroll: true }), reducedMotion ? 0 : 60);
   };
-  const close = (restore = true) => {
+
+  const close = () => {
     shell.classList.remove("is-open");
     shell.setAttribute("aria-hidden", "true");
     toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "Open navigation menu");
     document.body.classList.remove("mobile-menu-open");
-    if (restore && previousFocus instanceof HTMLElement) previousFocus.focus?.({ preventScroll: true });
-    previousFocus = null;
   };
 
   toggle.addEventListener("click", () => shell.classList.contains("is-open") ? close() : open());
-  closeBtn?.addEventListener("click", () => close());
-  backdrop?.addEventListener("click", () => close());
-  shell.querySelectorAll(".mobile-menu-nav a,.mobile-menu-social").forEach(el => el.addEventListener("click", () => close(false)));
-  drawerTheme?.addEventListener("click", () => cycleTheme());
-  drawerApply?.addEventListener("click", () => {
-    close(false);
-    setTimeout(() => document.getElementById("register")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" }), reducedMotion ? 0 : 70);
+  closeBtn?.addEventListener("click", close);
+  backdrop?.addEventListener("click", close);
+  shell.querySelectorAll(".mobile-menu-nav a").forEach(link => link.addEventListener("click", close));
+  themeButton?.addEventListener("click", cycleTheme);
+  registerButton?.addEventListener("click", () => {
+    close();
+    setTimeout(() => document.getElementById("register")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" }), 40);
   });
 
   document.addEventListener("keydown", event => {
-    if (!shell.classList.contains("is-open")) return;
-    if (event.key === "Escape") { event.preventDefault(); close(); return; }
-    if (event.key !== "Tab") return;
-    const list = focusables();
-    if (!list.length) return;
-    const first = list[0];
-    const last = list[list.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    if (event.key === "Escape" && shell.classList.contains("is-open")) close();
   });
 
-  viewport.addEventListener?.("change", event => { if (!event.matches) close(false); });
+  viewport.addEventListener?.("change", event => { if (!event.matches) close(); });
   applyTheme(readThemePreference());
 }
 
-function initMobileDock() {
-  if (document.querySelector(".mobile-dock")) return;
-  const dock = document.createElement("div");
-  dock.className = "mobile-dock";
-  dock.hidden = true;
-  dock.innerHTML = `
-    <button type="button" class="dock-apply">Reserve your seat</button>
-    <a class="dock-updates" href="https://chat.whatsapp.com/GwiXzxyBXTBDsBqeenPYP8" target="_blank" rel="noopener noreferrer" aria-label="Orientation updates on WhatsApp">
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.06 0C5.47 0 .11 5.36.11 11.95c0 2.1.55 4.16 1.6 5.96L0 24l6.24-1.64a11.93 11.93 0 0 0 5.81 1.48h.01c6.59 0 11.95-5.36 11.95-11.95 0-3.19-1.24-6.19-3.49-8.41Z"/></svg>
-    </a>`;
-  document.body.appendChild(dock);
+function initMobileRegisterButton() {
+  if (document.querySelector(".mobile-register-bar")) return;
 
-  dock.querySelector(".dock-apply")?.addEventListener("click", () => {
+  const bar = document.createElement("div");
+  bar.className = "mobile-register-bar";
+  bar.hidden = true;
+  bar.innerHTML = '<span><strong>Orientation 2026</strong><small>Registration open</small></span><button type="button">Register</button>';
+  document.body.appendChild(bar);
+
+  bar.querySelector("button")?.addEventListener("click", () => {
     document.getElementById("register")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
   });
 
   const mobile = window.matchMedia("(max-width: 760px)");
-  const hero = document.querySelector(".hero");
+  const hero = document.getElementById("event");
   const register = document.getElementById("register");
   let heroVisible = true;
   let registerVisible = false;
 
-  const sync = () => { dock.hidden = !mobile.matches || heroVisible || registerVisible; };
+  const sync = () => { bar.hidden = !mobile.matches || heroVisible || registerVisible; };
+
   if ("IntersectionObserver" in window) {
-    if (hero) new IntersectionObserver(([entry]) => { heroVisible = entry.isIntersecting; sync(); }, { threshold: .15 }).observe(hero);
-    if (register) new IntersectionObserver(([entry]) => { registerVisible = entry.isIntersecting; sync(); }, { threshold: .08 }).observe(register);
+    if (hero) new IntersectionObserver(([entry]) => { heroVisible = entry.isIntersecting; sync(); }, { threshold: .12 }).observe(hero);
+    if (register) new IntersectionObserver(([entry]) => { registerVisible = entry.isIntersecting; sync(); }, { threshold: .05 }).observe(register);
   }
+
   mobile.addEventListener?.("change", sync);
   sync();
 }
 
-initNavBehavior();
+initNav();
 initMobileMenu();
-initMobileDock();
+initMobileRegisterButton();
 
 const isConfigured = () =>
   CONFIG.appsScriptUrl.startsWith("https://script.google.com/macros/s/") && CONFIG.appsScriptUrl.endsWith("/exec");
@@ -389,6 +380,7 @@ window.addEventListener("message", event => {
     if (form) form.hidden = true;
     if (successPanel) successPanel.hidden = false;
     setMessage("");
+    successPanel?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
   } else {
     setMessage(data.message || "We could not complete your registration. Please try again.", "error");
   }
