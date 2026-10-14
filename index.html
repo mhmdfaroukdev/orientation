@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="icon" type="image/svg+xml" href="https://claudeaou.github.io/assets/brand/logos/claude-spark.svg" />
   <link rel="stylesheet" href="https://claudeaou.github.io/assets/css/site.css?v=20261014orientation3" data-cbc-mobile-menu />
-  <link rel="stylesheet" href="styles.css?v=20261014portal3" />
+  <link rel="stylesheet" href="styles.css?v=20261014fix1" />
 </head>
 <body>
   <header class="nav">
@@ -99,22 +99,10 @@
         </div>
 
         <div class="event-facts">
-          <div>
-            <span>Date</span>
-            <strong id="eventDate">To be announced</strong>
-          </div>
-          <div>
-            <span>Time</span>
-            <strong id="eventTime">To be announced</strong>
-          </div>
-          <div>
-            <span>Location</span>
-            <strong id="eventLocation">AOU Egypt</strong>
-          </div>
-          <div>
-            <span>Duration</span>
-            <strong>90 minutes</strong>
-          </div>
+          <div><span>Date</span><strong id="eventDate">To be announced</strong></div>
+          <div><span>Time</span><strong id="eventTime">To be announced</strong></div>
+          <div><span>Location</span><strong id="eventLocation">AOU Egypt</strong></div>
+          <div><span>Duration</span><strong>90 minutes</strong></div>
         </div>
 
         <div class="event-card-foot">
@@ -159,21 +147,24 @@
             <div><span>3</span><p><strong>Confirm</strong><small>Submit & receive ID</small></p></div>
           </div>
 
-          <form id="registrationForm" method="post" target="submitFrame" novalidate>
+          <form id="registrationForm" method="post" target="submitFrame" novalidate aria-busy="false">
             <div class="orientation-honeypot" aria-hidden="true">
               <label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
             </div>
 
             <fieldset class="form-block">
-              <legend><span>01</span><div><strong>Personal details</strong><small>How we identify and contact you</small></div></legend>
+              <legend>
+                <span class="form-step-number">01</span>
+                <span class="form-step-copy"><strong>Personal details</strong><small>How we identify and contact you</small></span>
+              </legend>
               <div class="orientation-field-grid">
                 <label class="orientation-field orientation-field-wide">Full name *
                   <input name="fullName" autocomplete="name" required maxlength="100" placeholder="Your full name" />
                 </label>
 
                 <label class="orientation-field orientation-field-wide">Email address *
-                  <input name="email" type="email" autocomplete="email" required maxlength="120" placeholder="name@example.com" />
-                  <small>Use an email you actively check. Your confirmation will be sent here.</small>
+                  <input name="email" type="email" autocomplete="email" required maxlength="120" placeholder="name@example.com" aria-describedby="emailHelp" />
+                  <small id="emailHelp">Use an email you actively check. Your confirmation will be sent here.</small>
                 </label>
 
                 <label class="orientation-field">AOU Student ID *
@@ -187,7 +178,10 @@
             </fieldset>
 
             <fieldset class="form-block">
-              <legend><span>02</span><div><strong>Academic details</strong><small>Your AOU profile and team interest</small></div></legend>
+              <legend>
+                <span class="form-step-number">02</span>
+                <span class="form-step-copy"><strong>Academic details</strong><small>Your AOU profile and team interest</small></span>
+              </legend>
               <div class="orientation-field-grid">
                 <label class="orientation-field">Academic year *
                   <select name="academicYear" required>
@@ -214,16 +208,19 @@
                 <input type="hidden" name="faculty" id="facultyCombined" />
 
                 <label class="orientation-field orientation-field-wide">Team interest
-                  <select name="track" id="teamInterest">
+                  <select name="track" id="teamInterest" aria-describedby="teamHelp">
                     <option value="">Not sure yet</option>
                   </select>
-                  <small>Optional — choose the team you are most interested in.</small>
+                  <small id="teamHelp">Optional — choose the team you are most interested in.</small>
                 </label>
               </div>
             </fieldset>
 
             <fieldset class="form-block form-confirm-block">
-              <legend><span>03</span><div><strong>Confirm registration</strong><small>Review and submit</small></div></legend>
+              <legend>
+                <span class="form-step-number">03</span>
+                <span class="form-step-copy"><strong>Confirm registration</strong><small>Review and submit</small></span>
+              </legend>
 
               <label class="check orientation-consent">
                 <input type="checkbox" name="consent" value="yes" required />
@@ -249,14 +246,8 @@
             <p class="success-lead">Your registration has been received successfully. Keep your reference ID and check your inbox for confirmation.</p>
 
             <div class="success-summary">
-              <div>
-                <span>Registration ID</span>
-                <strong id="successRegistrationId">—</strong>
-              </div>
-              <div>
-                <span>Status</span>
-                <strong>Confirmed</strong>
-              </div>
+              <div><span>Registration ID</span><strong id="successRegistrationId">—</strong></div>
+              <div><span>Status</span><strong>Confirmed</strong></div>
             </div>
 
             <div class="success-next">
@@ -378,6 +369,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20261014portal3"></script>
+  <script src="app.js?v=20261014fix1"></script>
 </body>
 </html>
