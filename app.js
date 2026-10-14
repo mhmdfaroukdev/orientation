@@ -55,13 +55,21 @@ const CLUB_TEAMS = [
 ];
 
 const THEME_KEY = "cbc-theme";
+const STEP_LABELS = ["Your details", "University", "Confirm"];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
 
 const form = document.getElementById("registrationForm");
-const submitButton = form?.querySelector("button[type='submit']");
-const submitLabel = submitButton?.querySelector(".submit-label");
 const message = document.getElementById("formMessage");
+const modal = document.getElementById("modal");
+const closeModalButton = document.getElementById("closeModal");
+const closeSuccessButton = document.getElementById("closeSuccess");
+const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+const formPages = [...document.querySelectorAll("#registrationForm .form-page")];
+const stepCounter = document.getElementById("stepCounter");
+const stepLabel = document.getElementById("stepLabel");
+const progress = document.getElementById("progress");
 const facultySelect = document.getElementById("facultySelect");
 const majorSelect = document.getElementById("majorSelect");
 const facultyCombined = document.getElementById("facultyCombined");
@@ -75,12 +83,12 @@ const navContainer = document.querySelector(".nav-links");
 const themeToggle = document.getElementById("themeToggle");
 const themeLabel = themeToggle?.querySelector(".theme-label");
 const themeIcon = themeToggle?.querySelector(".theme-icon");
-const progressItems = [...document.querySelectorAll(".form-progress > div")];
-const formBlocks = [...document.querySelectorAll("#registrationForm .form-block")];
 
 let submitTimer;
 let previousMenuFocus = null;
+let previousModalFocus = null;
 let activeSubmitToken = "";
+let currentStep = 0;
 
 function readThemePreference() {
   try { return localStorage.getItem(THEME_KEY) || "system"; }
@@ -225,10 +233,10 @@ function initMobileMenu() {
       </div>
       <div class="mobile-menu-status live">Registration open</div>
       <nav class="mobile-menu-nav" aria-label="Mobile navigation links">
-        <a href="#event">Event details</a>
-        <a href="#register">Registration</a>
         <a href="#agenda">Agenda</a>
+        <a href="#process">Process</a>
         <a href="#faq">FAQ</a>
+        <a href="#community">Community</a>
         <a href="https://claudeaou.github.io/" target="_blank" rel="noopener noreferrer">Main club site ↗</a>
       </nav>
       <div class="mobile-menu-divider" aria-hidden="true"></div>
@@ -274,7 +282,7 @@ function initMobileMenu() {
   themeButton?.addEventListener("click", cycleTheme);
   registerButton?.addEventListener("click", () => {
     close(false);
-    setTimeout(() => document.getElementById("register")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" }), 40);
+    setTimeout(openModal, reducedMotion ? 0 : 60);
   });
 
   document.addEventListener("keydown", event => {
@@ -302,85 +310,10 @@ function initMobileMenu() {
   applyTheme(readThemePreference());
 }
 
-function initMobileRegisterButton() {
-  if (document.querySelector(".mobile-register-bar")) return;
-
-  const bar = document.createElement("div");
-  bar.className = "mobile-register-bar";
-  bar.hidden = true;
-  bar.innerHTML = '<span><strong>Orientation 2026</strong><small>Registration open</small></span><button type="button">Register</button>';
-  document.body.appendChild(bar);
-
-  bar.querySelector("button")?.addEventListener("click", () => {
-    document.getElementById("register")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
-  });
-
-  const mobile = window.matchMedia("(max-width: 760px)");
-  const hero = document.getElementById("event");
-  const register = document.getElementById("register");
-  let heroVisible = true;
-  let registerVisible = false;
-
-  const sync = () => {
-    const visible = mobile.matches && !heroVisible && !registerVisible;
-    bar.hidden = !visible;
-    document.body.classList.toggle("has-mobile-register-bar", visible);
-  };
-
-  if ("IntersectionObserver" in window) {
-    if (hero) new IntersectionObserver(([entry]) => { heroVisible = entry.isIntersecting; sync(); }, { threshold: .12 }).observe(hero);
-    if (register) new IntersectionObserver(([entry]) => { registerVisible = entry.isIntersecting; sync(); }, { threshold: .05 }).observe(register);
-  }
-
-  mobile.addEventListener?.("change", sync);
-  sync();
-}
-
-function requiredFieldsAreValid(block) {
-  const required = [...block.querySelectorAll("input[required],select[required],textarea[required]")];
-  return required.length > 0 && required.every(field => field.checkValidity());
-}
-
-function syncFormProgress(activeBlock = null) {
-  if (!progressItems.length || !formBlocks.length) return;
-  let activeIndex = activeBlock ? formBlocks.indexOf(activeBlock) : -1;
-  if (activeIndex < 0) activeIndex = formBlocks.findIndex(block => !requiredFieldsAreValid(block));
-  if (activeIndex < 0) activeIndex = formBlocks.length - 1;
-
-  progressItems.forEach((item, index) => {
-    const complete = index < formBlocks.length && requiredFieldsAreValid(formBlocks[index]);
-    item.classList.toggle("active", index === activeIndex);
-    item.classList.toggle("complete", complete && index !== activeIndex);
-    item.setAttribute("aria-current", index === activeIndex ? "step" : "false");
-  });
-}
-
-form?.addEventListener("focusin", event => {
-  const block = event.target instanceof Element ? event.target.closest(".form-block") : null;
-  if (block) syncFormProgress(block);
-});
-form?.addEventListener("input", () => syncFormProgress());
-form?.addEventListener("change", () => syncFormProgress());
-syncFormProgress();
-
-initNav();
-initMobileMenu();
-initMobileRegisterButton();
-
-const isConfigured = () =>
-  CONFIG.appsScriptUrl.startsWith("https://script.google.com/macros/s/") && CONFIG.appsScriptUrl.endsWith("/exec");
-
 function setMessage(text, type = "") {
   if (!message) return;
   message.textContent = text;
   message.className = `orientation-form-message ${type}`.trim();
-}
-
-function setSubmitting(submitting) {
-  if (!submitButton || !submitLabel || !form) return;
-  submitButton.disabled = submitting;
-  submitLabel.textContent = submitting ? "Registering…" : "Complete registration";
-  form.setAttribute("aria-busy", submitting ? "true" : "false");
 }
 
 function validateField(field) {
@@ -390,13 +323,150 @@ function validateField(field) {
   return valid;
 }
 
+function showStep(index, { focus = false } = {}) {
+  const total = formPages.length || 1;
+  currentStep = Math.min(Math.max(Number(index) || 0, 0), total - 1);
+  formPages.forEach((page, i) => page.classList.toggle("active", i === currentStep));
+
+  if (stepCounter) stepCounter.textContent = `Step ${currentStep + 1} of ${total}`;
+  if (stepLabel) stepLabel.textContent = STEP_LABELS[currentStep] || "";
+  if (progress) progress.style.width = `${((currentStep + 1) / total) * 100}%`;
+  if (backBtn) backBtn.hidden = currentStep === 0;
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.textContent = currentStep === total - 1 ? "Complete registration →" : "Continue →";
+  }
+
+  if (focus) {
+    formPages[currentStep]?.querySelector("input:not([type='hidden']):not([name='website']), select")?.focus({ preventScroll: true });
+  }
+}
+
+function openModal() {
+  if (!modal) return;
+  previousModalFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  setTimeout(() => {
+    if (successPanel && !successPanel.hidden) {
+      closeSuccessButton?.focus({ preventScroll: true });
+      return;
+    }
+    formPages[currentStep]?.querySelector("input:not([type='hidden']):not([name='website']), select")?.focus({ preventScroll: true });
+  }, reducedMotion ? 0 : 80);
+}
+
+function closeModal() {
+  if (!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+  if (previousModalFocus?.isConnected) previousModalFocus.focus?.({ preventScroll: true });
+  previousModalFocus = null;
+}
+
+function modalFocusables() {
+  if (!modal) return [];
+  return [...modal.querySelectorAll("a[href], button, input, select, textarea")]
+    .filter(el => !el.disabled && el.tabIndex >= 0 && el.offsetParent !== null);
+}
+
+document.querySelectorAll(".js-register").forEach(button => {
+  button.addEventListener("click", () => openModal());
+});
+closeModalButton?.addEventListener("click", () => closeModal());
+closeSuccessButton?.addEventListener("click", () => closeModal());
+modal?.addEventListener("click", event => { if (event.target === modal) closeModal(); });
+
+document.addEventListener("keydown", event => {
+  if (!modal?.classList.contains("open")) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeModal();
+    return;
+  }
+  if (event.key !== "Tab") return;
+  const list = modalFocusables();
+  if (!list.length) return;
+  const first = list[0];
+  const last = list[list.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+function stepFields(index) {
+  return [...(formPages[index]?.querySelectorAll("input, select, textarea") || [])]
+    .filter(field => field.name !== "website" && field.type !== "hidden" && !field.disabled);
+}
+
+function goToStepOfField(field) {
+  const index = formPages.indexOf(field?.closest?.(".form-page"));
+  if (index !== -1 && index !== currentStep) showStep(index);
+}
+
+nextBtn?.addEventListener("click", () => {
+  const lastStep = currentStep === formPages.length - 1;
+  if (lastStep) {
+    submitRegistration();
+    return;
+  }
+
+  const fields = stepFields(currentStep);
+  fields.forEach(validateField);
+  const firstInvalid = fields.find(field => !field.checkValidity());
+  if (firstInvalid) {
+    setMessage("Please complete all required fields before continuing.", "error");
+    firstInvalid.focus();
+    firstInvalid.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    return;
+  }
+
+  setMessage("");
+  syncFacultyValue();
+  showStep(currentStep + 1, { focus: true });
+});
+
+backBtn?.addEventListener("click", () => {
+  setMessage("");
+  showStep(currentStep - 1);
+});
+
+initNav();
+initMobileMenu();
+showStep(0);
+
 form?.querySelectorAll("input, select, textarea").forEach(field => {
   field.addEventListener("input", () => validateField(field));
   field.addEventListener("change", () => validateField(field));
 });
 
+const isConfigured = () =>
+  CONFIG.appsScriptUrl.startsWith("https://script.google.com/macros/s/") && CONFIG.appsScriptUrl.endsWith("/exec");
+
+function setSubmitting(submitting) {
+  if (!nextBtn || !form) return;
+  form.setAttribute("aria-busy", submitting ? "true" : "false");
+  if (submitting) {
+    nextBtn.disabled = true;
+    nextBtn.textContent = "Registering…";
+  } else {
+    showStep(currentStep);
+  }
+}
+
 form?.addEventListener("submit", event => {
   event.preventDefault();
+  submitRegistration();
+});
+
+function submitRegistration() {
+  if (!form) return;
   setMessage("");
   syncFacultyValue();
 
@@ -413,9 +483,11 @@ form?.addEventListener("submit", event => {
   if (!facultyCombined?.value || !allValid || !form.checkValidity()) {
     setMessage("Please complete all required fields before submitting.", "error");
     const firstInvalid = form.querySelector(":invalid");
-    firstInvalid?.focus();
-    firstInvalid?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
-    syncFormProgress(firstInvalid?.closest?.(".form-block") || null);
+    goToStepOfField(firstInvalid);
+    setTimeout(() => {
+      firstInvalid?.focus({ preventScroll: true });
+      firstInvalid?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    }, 0);
     return;
   }
 
@@ -440,7 +512,7 @@ form?.addEventListener("submit", event => {
     setSubmitting(false);
     setMessage("We sent the request but did not receive confirmation yet. Please wait a moment and check your email before trying again.", "warning");
   }, 20000);
-});
+}
 
 function isTrustedAppsScriptOrigin(origin) {
   if (!origin) return false;
@@ -480,6 +552,7 @@ window.addEventListener("message", event => {
     if (successPanel) successPanel.hidden = false;
     setMessage("");
     successPanel?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    setTimeout(() => closeSuccessButton?.focus({ preventScroll: true }), reducedMotion ? 0 : 60);
   } else {
     setMessage(data.message || "We could not complete your registration. Please try again.", "error");
   }
@@ -497,9 +570,8 @@ registerAnother?.addEventListener("click", () => {
   syncFacultyValue();
   form.querySelectorAll("[aria-invalid]").forEach(el => el.removeAttribute("aria-invalid"));
   setMessage("");
-  setSubmitting(false);
-  syncFormProgress(formBlocks[0] || null);
+  showStep(0);
   const tokenField = form.elements.namedItem("clientToken");
   if (tokenField && "value" in tokenField) tokenField.value = "";
-  form.querySelector("input:not([type='hidden']):not([name='website'])")?.focus({ preventScroll: true });
+  formPages[0]?.querySelector("input:not([type='hidden']):not([name='website'])")?.focus({ preventScroll: true });
 });
